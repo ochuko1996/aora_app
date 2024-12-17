@@ -31,7 +31,7 @@ const SignIn = () => {
         console.log(result, "network is bad");
 
         // global state
-        setUser(result);
+        setUser(result ?? null);
         setIsLoggedIn(true);
 
         Alert.alert("Success", "User signed in successfully");

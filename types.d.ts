@@ -7,6 +7,9 @@
 //     username: string;
 //     avatar: string;
 //   };
+
+import { ImagePickerAsset } from "expo-image-picker";
+
 // }
 interface Users {
   id: string;
@@ -15,7 +18,13 @@ interface Users {
   email: string;
   password: string;
 }
-
+interface VideoUploadProp {
+  title: string;
+  video: ImagePickerAsset | null;
+  thumbnail: ImagePickerAsset | null;
+  prompt: null | string;
+  creator?: string;
+}
 interface VideoData {
   $collectionId?: string;
   $createdAt?: string;

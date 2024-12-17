@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomButton, FormField, ReuseableText } from "@/components";
@@ -17,13 +9,8 @@ import { router } from "expo-router";
 import { createVideo } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import * as ImagePicker from "expo-image-picker";
+import { VideoUploadProp } from "@/types";
 
-interface VideoProp {
-  title: string;
-  video: ImagePicker.ImagePickerAsset | null;
-  thumbnail: ImagePicker.ImagePickerAsset | null;
-  prompt: null | string;
-}
 const Create = () => {
   const initialValues = {
     title: "",
@@ -32,7 +19,7 @@ const Create = () => {
     prompt: "",
   };
   const [uploading, setUploading] = useState<boolean>(false);
-  const [form, setForm] = useState<VideoProp>(initialValues);
+  const [form, setForm] = useState<VideoUploadProp>(initialValues);
   const { user } = useGlobalContext();
   const openPicker = async (selectType: string) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -57,7 +44,7 @@ const Create = () => {
     setUploading(true);
 
     try {
-      await createVideo({ ...form, userId: user?.$id });
+      await createVideo({ ...form, creator: user?.$id });
       Alert.alert("Success", "Post uploaded");
       router.push("/home");
     } catch (error: any) {

@@ -6,15 +6,16 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { Models } from "react-native-appwrite";
 
 // Define the shape of your context
 interface GlobalContextType {
   isLoggedIn: boolean;
   setIsLoggedIn: (value: boolean) => void;
-  user: UserAccount | null;
+  user: Models.Document | null;
   setIsLoading: (value: boolean) => void;
   isLoading: boolean;
-  setUser: (value: UserAccount | null) => void;
+  setUser: (value: Models.Document | null) => void;
 }
 
 // Create the context with a default value of undefined
@@ -36,7 +37,7 @@ interface GlobalProviderProps {
 
 const GlobalProvider = ({ children }: GlobalProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [user, setUser] = useState<null | UserAccount>(null);
+  const [user, setUser] = useState<null | Models.Document>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

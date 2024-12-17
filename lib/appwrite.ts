@@ -1,3 +1,4 @@
+import { Users, VideoUploadProp } from "@/types";
 import { DocumentPickerAsset } from "expo-document-picker";
 import {
   Client,
@@ -102,8 +103,9 @@ export const getCurrentUser = async () => {
     if (!currentUser) throw Error;
 
     return currentUser.documents[0];
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    throw new Error(error);
   }
 };
 
@@ -165,6 +167,7 @@ export const signOut = async () => {
 };
 export const getFilePreview = async (fileId: string, type: string) => {
   let fileUrl;
+
   try {
     if (type === "video") {
       fileUrl = storage.getFileView(storageId, fileId);
@@ -183,6 +186,7 @@ export const getFilePreview = async (fileId: string, type: string) => {
     if (!fileUrl) {
       throw Error;
     }
+    return fileUrl;
   } catch (error: any) {
     throw new Error(error);
   }
@@ -190,29 +194,32 @@ export const getFilePreview = async (fileId: string, type: string) => {
 export const uploadFile = async (file: any, type: string) => {
   if (!file) return;
   const asset = {
-    type: file.mimeType,
-    uri: file.uri,
     name: file.fileName,
+    type: file.mimeType,
     size: file.fileSize,
+    uri: file.uri,
   };
+
   try {
     const uploadedFile = await storage.createFile(
       storageId,
       ID.unique(),
       asset
     );
+
     const fileUrl = await getFilePreview(uploadedFile.$id, type);
     return fileUrl;
   } catch (error: any) {
     throw new Error(error);
   }
 };
-export const createVideo = async (form) => {
+export const createVideo = async (form: VideoUploadProp) => {
   try {
     const [thumbnailUrl, videoUrl] = await Promise.all([
       uploadFile(form.thumbnail, "image"),
-      uploadFile(form.thumbnail, "video"),
+      uploadFile(form.video, "video"),
     ]);
+
     const newPost = await databases.createDocument(
       databaseId,
       videoCollectionId,
@@ -222,7 +229,7 @@ export const createVideo = async (form) => {
         thumbnail: thumbnailUrl,
         video: videoUrl,
         prompt: form.prompt,
-        creator: form.userId,
+        creator: form.creator,
       }
     );
     return newPost;
