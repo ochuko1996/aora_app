@@ -25,6 +25,7 @@
     },
     "plugins": [
       "expo-router",
+
       [
         "expo-splash-screen",
         {
@@ -33,7 +34,14 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-video"
+      // [
+      //   {
+      //     "supportsBackgroundPlayback": true,
+      //     "supportsPictureInPicture": true
+      //   }
+      // ]
     ],
     "experiments": {
       "typedRoutes": true

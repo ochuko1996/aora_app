@@ -1,9 +1,18 @@
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import React, { useState } from "react";
 import * as Animatable from "react-native-animatable";
 import { ImageBackground, Image } from "react-native";
 import { Video, ResizeMode } from "expo-av";
 import { icons } from "@/constants";
+import { VideoData } from "@/types";
+import { useEvent } from "expo";
+import { useVideoPlayer, VideoView } from "expo-video";
 
 interface TrendingItemProp {
   activeItem: string;
@@ -28,6 +37,24 @@ const zoomOut = {
 };
 const TrendingItem = ({ activeItem, item }: TrendingItemProp) => {
   const [play, setPlay] = useState<boolean>(false);
+  const player = useVideoPlayer(item.video, (player) => {
+    player.loop = true;
+    // player.play();
+  });
+
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      player.pause();
+      console.log(isPlaying, "paused");
+    } else {
+      player.play();
+      console.log(isPlaying, "paused");
+    }
+  };
 
   return (
     <Animatable.View
@@ -35,20 +62,12 @@ const TrendingItem = ({ activeItem, item }: TrendingItemProp) => {
       animation={activeItem === item.$id ? zoomIn : zoomOut}
       duration={500}
     >
-      {play ? (
-        <Video
-          source={{ uri: item.video }}
-          className="w-52 h-52 rounded-[35px] mt-3 bg-white/10"
-          resizeMode={ResizeMode.CONTAIN}
-          useNativeControls
-          shouldPlay
-          onPlaybackStatusUpdate={(status) => {
-            if (status.isLoaded) {
-              if (status.didJustFinish) {
-                setPlay(false);
-              }
-            }
-          }}
+      {isPlaying ? (
+        <VideoView
+          style={styles.vid}
+          player={player}
+          allowsFullscreen
+          allowsPictureInPicture
         />
       ) : (
         <TouchableOpacity
@@ -96,3 +115,13 @@ const Trending = ({ posts }: VideoData[]) => {
 };
 
 export default Trending;
+
+const styles = StyleSheet.create({
+  vid: {
+    height: 208,
+    width: 208,
+    borderRadius: 35,
+    marginTop: 12,
+    backgroundColor: `rgb(255 255 255 / 0.1)`,
+  },
+});

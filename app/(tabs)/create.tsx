@@ -1,15 +1,21 @@
-import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CustomButton, FormField, ReuseableText } from "@/components";
-import { ResizeMode, Video } from "expo-av";
 import { icons } from "@/constants";
-import * as DocumentPicker from "expo-document-picker";
 import { router } from "expo-router";
 import { createVideo } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import * as ImagePicker from "expo-image-picker";
 import { VideoUploadProp } from "@/types";
+import { useVideoPlayer, VideoView } from "expo-video";
 
 const Create = () => {
   const initialValues = {
@@ -21,13 +27,18 @@ const Create = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [form, setForm] = useState<VideoUploadProp>(initialValues);
   const { user } = useGlobalContext();
+  const source = form?.video ? form?.video?.uri : "";
+  const player = useVideoPlayer(source, (player) => {
+    player.loop = true;
+  });
+
+  console.log(form?.video?.uri);
   const openPicker = async (selectType: string) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: selectType === "image" ? ["images"] : ["videos"],
       quality: 1,
       aspect: [4, 3],
     });
-
     if (!result.canceled) {
       if (selectType === "image") {
         setForm({ ...form, thumbnail: result.assets[0] });
@@ -76,12 +87,19 @@ const Create = () => {
           />
           <TouchableOpacity onPress={() => openPicker("video")}>
             {form.video ? (
-              <Video
-                source={{ uri: form.video?.uri }}
-                className="w-full h-64 rounded-2xl"
-                resizeMode={ResizeMode.COVER}
+              <VideoView
+                className="w-full h-60 rounded-xl mt-3"
+                style={styles.vid}
+                player={player}
+                allowsFullscreen
+                allowsPictureInPicture
               />
             ) : (
+              // <Video
+              //   source={{ uri: form.video.uri }}
+              //   className="w-full h-64 rounded-2xl"
+              //   resizeMode={ResizeMode.COVER}
+              // />
               <View className="w-full bg-black-100 rounded-2xl px-4 justify-center items-center">
                 <View className="w-14 h-14 border border-secondary-100 justify-center items-center">
                   <Image
@@ -140,3 +158,10 @@ const Create = () => {
 };
 
 export default Create;
+
+const styles = StyleSheet.create({
+  vid: {
+    height: 240,
+    borderRadius: 12,
+  },
+});
