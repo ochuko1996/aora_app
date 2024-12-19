@@ -7,8 +7,6 @@ import { ResizeMode, Video } from "expo-av";
 import { VideoData } from "@/types";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useEvent } from "expo";
-import demovideo from "@/assets/test.mp4";
-console.log(demovideo);
 
 const VideoCard = ({
   title,
@@ -36,6 +34,7 @@ const VideoCard = ({
       console.log(isPlaying, "paused");
     }
   };
+  console.log(video);
 
   return (
     <View className="flex-col items-center px-4 mb-14">
